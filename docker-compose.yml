@@ -1,0 +1,7 @@
+version: '3'
+services:
+    sips_base:
+        image: unity-sds/sounder_sips_base:r0.1.0
+        build:
+            context: base/ 
+            dockerfile: $PWD/base/Dockerfile
