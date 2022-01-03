@@ -5,7 +5,7 @@
 tar zxf $SOURCES_PATH/proj-4.8.0.tar.gz
 cd proj-4.8.0
 ./configure --prefix=$INSTALL_PREFIX/proj-4.8.0
-make
+make -j $NUM_COMPILE_JOBS
 make install
 echo
 echo "$ ls -l $INSTALL_PREFIX/proj-4.8.0"
