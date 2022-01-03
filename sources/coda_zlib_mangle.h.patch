@@ -1,0 +1,5 @@
+12a13,16
+> #define inflateValidate coda_inflateValidate
+> #define inflateCodesUsed coda_inflateCodesUsed
+> #define adler32_z coda_adler32_z
+> #define crc32_z coda_crc32_z

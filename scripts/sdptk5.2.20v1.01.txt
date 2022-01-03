@@ -1,0 +1,13 @@
+lnx64
+yes
+yes
+/opt/packages/zlib-1.2.11
+yes
+/opt/packages/jpeg-9b
+yes
+/opt/packages/szip-2.1.1
+yes
+yes
+yes
+yes
+yes
