@@ -79,6 +79,9 @@ RUN $SCRIPTS_PATH/netcdf-cxx4-4.3.1.sh
 RUN yum install -y csh 
 RUN $SCRIPTS_PATH/sdptk5.2.20v1.01.sh
 
+# Update leap seconds file. This file needs to be periodically updated
+COPY ephemeris/leapsec.dat /opt/packages/sdptk5.2.20v1.01/TOOLKIT/database/common/TD/leapsec.dat
+
 # Install cxxtest
 # This simply has the package expanded into the destination directory
 # https://sourceforge.net/projects/cxxtest/files/cxxtest/
@@ -120,7 +123,7 @@ RUN $SCRIPTS_PATH/jasper-1.900.1.sh
 # Install g2clib
 # https://github.com/weathersource/g2clib/tags
 
-RUN yum install -y libpng-devel
+RUN yum install -y libpng-devel libpng-static
 RUN $SCRIPTS_PATH/g2clib-1.4.0.sh
 
 # Install bufrlib
