@@ -1,0 +1,2 @@
+# Ignore src when setting up context as will explicitly COPY it
+src/

@@ -1,0 +1,3 @@
+[submodule "spss/src"]
+	path = spss/src
+	url = git@github.jpl.nasa.gov:SIPS/SPSS.git

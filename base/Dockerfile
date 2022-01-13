@@ -13,6 +13,9 @@ ENV NUM_COMPILE_JOBS=4
 # Install development tools
 RUN yum -y group install "Development Tools"
 
+# Install additional base packages
+RUN yum -y install python3 wget epel-release
+
 # Copy files
 COPY sources $SOURCES_PATH
 COPY scripts $SCRIPTS_PATH

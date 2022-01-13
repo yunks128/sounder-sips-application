@@ -6,3 +6,9 @@ services:
         build:
             context: base/ 
             dockerfile: $PWD/base/Dockerfile
+    spss_pge:
+        image: unity-sds/sounder_sips_pge:r0.1.0
+        hostname: local
+        build:
+            context: spss/
+            dockerfile: $PWD/spss/Dockerfile
