@@ -7,7 +7,9 @@ WORKDIR $BUILD_PATH
 
 COPY src $BUILD_PATH/spss
 
-RUN cd $BUILD_PATH/spss/src/common/make && make -j $NUM_COMPILE_JOBS
+# Parallel build can cause this step to fail
+RUN cd $BUILD_PATH/spss/src/common/make && make -j 1
+
 RUN cd $BUILD_PATH/spss/src/shared_io/make && make -j $NUM_COMPILE_JOBS
 RUN cd $BUILD_PATH/spss/src/shared_alg/make && make -j $NUM_COMPILE_JOBS
 RUN cd $BUILD_PATH/spss/src/pge_wrapper/make && make -j $NUM_COMPILE_JOBS
