@@ -7,11 +7,48 @@ RUN cd $BUILD_PATH/spss/src/sips_pge/l1a_atms/make && make -j $NUM_COMPILE_JOBS
 
 FROM centos:7
 
-RUN mkdir -p /pge/bin
-COPY --from=builder /build/spss/src/sips_pge/l1a_atms/pge/bin/L1AMw_main /pge/bin
+ENV PGSHOME=/opt/packages/sdptk5.2.20v1.01/TOOLKIT/
+ENV PGS_PC_INFO_FILE=/pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
+ENV PGS_LEAPSEC_FILE=${PGEHOME}/database/common/TD/leapsec.dat
 
-RUN yum install -y libquadmath && \
+# Install packages required for this PGE
+# Packages in second yum call come from EPEL
+RUN yum install -y libquadmath epel-release && \
+    yum install -y python2-netcdf4 && \
     yum clean all && \
     rm -rf /var/cache/yum
 
-CMD ["/pge/bin/L1AMw_main"]
+# Create directory structure for PGE files and necessary files
+RUN mkdir -p /pge/bin && mkdir -p /pge/static && mkdir -p /opt/packages
+
+# Copy PGE binary from build
+COPY --from=builder /build/spss/src/sips_pge/l1a_atms/pge/bin/L1AMw_main /pge/bin
+
+# Copy wrapper script from acceptance tests and modify paths
+COPY src/src/sips_pge/l1a_atms_snpp/acctest/scripts/l1amw_run.py /pge/bin
+
+RUN chmod 755 /pge/bin/l1amw_run.py
+RUN sed -i 's|../expected|/pge/expected|' /pge/bin/l1amw_run.py
+RUN sed -i 's|../../../../l1a_atms/pge/bin|/pge/bin|' /pge/bin/l1amw_run.py
+
+# Copy over SDP Toolkit for its database files
+COPY --from=builder /opt/packages/sdptk5.2.20v1.01 /opt/packages/sdptk5.2.20v1.01
+
+# Copy files from acceptance test directories, these are referenced by the input XML file
+COPY src/src/sips_pge/l1a_atms_snpp/acctest/in/pcf/SNDR.PGSToolkit_ProcessControlFile.pcf /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/acctest/in/SNDR.SNPP.ATMS.L1A.sfif_201214135000.xml /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/acctest/in/SNDR.SchemaParameterfile.060401120000.xsd /pge/static
+
+# Modify SFIF file to point to Docker paths
+RUN sed -i 's|../../../static|/pge/static|' /pge/static/SNDR.SNPP.ATMS.L1A.sfif_201214135000.xml
+
+# Static files referenced in SFIF file
+COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.template.v02_02_08_201214135000.nc /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/static/ATMS-SDR-CC_npp_20131201000000Z_20140101000000Z_ee00000000000000Z_PS-1-O-CCR-14-1487-JPSS-DPA-008-SIDEA-PE_noaa_all_all-_all.xml /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.calibration_data_200204184500.csv /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.APID_531_ENGHSKP_v11_200204184500.xml /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.apf_180412120000.xml /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1A.SPDCMetConstants_170905120000.pev /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1A.SPDCMetMappings_170905120000.xml /pge/static
+
+CMD ["/pge/bin/l1amw_run.py"]
