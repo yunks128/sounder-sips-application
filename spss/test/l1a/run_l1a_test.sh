@@ -13,7 +13,7 @@ lcl_static_dir=$(readlink -f $(dirname $0)/../../../static)
 if [ ! -z "$SIPS_STATIC_DIR" ]; then
     static_dir=$SIPS_STATIC_DIR
 elif [ -e "$lcl_static_dir" ]; then
-    static_dir=$lcl_statgic_dir
+    static_dir=$lcl_static_dir
 else
     echo "Could not find static files directory from either a \$SIPS_STATIC_DIR environment variable or at the path: $lcl_static_dir"
     exit 1
