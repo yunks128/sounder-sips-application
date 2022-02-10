@@ -1,2 +1,4 @@
-# Ignore src when setting up context as will explicitly COPY it
-src/
+# Ignore certain files when copying that are large and unneeded for the build context
+src/**/acctest
+src/**/unittest
+src/**/unittests

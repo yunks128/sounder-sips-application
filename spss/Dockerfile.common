@@ -1,0 +1,13 @@
+FROM unity-sds/sounder_sips_base:r0.1.0
+
+ENV BUILD_PATH /build
+ENV NUM_COMPILE_JOBS=4
+
+WORKDIR $BUILD_PATH
+
+COPY src $BUILD_PATH/spss
+
+RUN cd $BUILD_PATH/spss/src/common/make && make -j $NUM_COMPILE_JOBS
+RUN cd $BUILD_PATH/spss/src/shared_io/make && make -j $NUM_COMPILE_JOBS
+RUN cd $BUILD_PATH/spss/src/shared_alg/make && make -j $NUM_COMPILE_JOBS
+RUN cd $BUILD_PATH/spss/src/pge_wrapper/make && make -j $NUM_COMPILE_JOBS

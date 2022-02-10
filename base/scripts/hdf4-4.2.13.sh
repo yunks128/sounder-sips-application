@@ -6,7 +6,6 @@
 tar zxf $SOURCES_PATH/hdf-4.2.13.tar.gz
 cd hdf-4.2.13
 ./configure --prefix=$INSTALL_PREFIX/hdf4-4.2.13 \
---with-jpeg=$INSTALL_PREFIX/jpeg-9b \
 --with-zlib=$INSTALL_PREFIX/zlib-1.2.11 \
 --with-szlib=$INSTALL_PREFIX/szip-2.1.1 \
 --enable-netcdf=no  \

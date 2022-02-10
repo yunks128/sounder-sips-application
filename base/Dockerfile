@@ -16,6 +16,11 @@ RUN yum -y group install "Development Tools"
 # Install additional base packages
 RUN yum -y install python3 wget epel-release
 
+# Install system dependencies
+# libjpeg-turbo-devel is used by hdf4 library instead of the installed jpeg-9b version
+# Even though boost is installed into /opt/packages, some of the SIPS PGEs use a system wide version
+RUN yum -y install libjpeg-turbo-devel boost-devel python36-netcdf4
+
 # Copy files
 COPY sources $SOURCES_PATH
 COPY scripts $SCRIPTS_PATH
