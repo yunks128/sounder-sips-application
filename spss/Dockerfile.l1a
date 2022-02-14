@@ -34,6 +34,10 @@ RUN sed -i 's|../../../../l1a_atms/pge/bin|/pge/bin|' /pge/bin/l1amw_run.py
 # Copy over SDP Toolkit for its database files
 COPY --from=builder /opt/packages/sdptk5.2.20v1.01 /opt/packages/sdptk5.2.20v1.01
 
+# Update leap seconds file. This file needs to be periodically updated
+COPY ephemeris/leapsec.dat /opt/packages/sdptk5.2.20v1.01/TOOLKIT/database/common/TD/leapsec.dat
+COPY ephemeris/utcpole.dat /opt/packages/sdptk5.2.20v1.01/TOOLKIT/database/common/CSC/utcpole.dat
+
 # Copy files from acceptance test directories, these are referenced by the input XML file
 COPY src/src/sips_pge/l1a_atms_snpp/acctest/in/pcf/SNDR.PGSToolkit_ProcessControlFile.pcf /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/acctest/in/SNDR.SNPP.ATMS.L1A.sfif_201214135000.xml /pge/static

@@ -87,9 +87,6 @@ RUN $SCRIPTS_PATH/netcdf-cxx4-4.3.1.sh
 RUN yum install -y csh 
 RUN $SCRIPTS_PATH/sdptk5.2.20v1.01.sh
 
-# Update leap seconds file. This file needs to be periodically updated
-COPY ephemeris/leapsec.dat /opt/packages/sdptk5.2.20v1.01/TOOLKIT/database/common/TD/leapsec.dat
-
 # Install cxxtest
 # This simply has the package expanded into the destination directory
 # https://sourceforge.net/projects/cxxtest/files/cxxtest/
