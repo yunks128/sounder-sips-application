@@ -46,6 +46,9 @@ COPY src/src/sips_pge/l1a_atms_snpp/acctest/in/SNDR.SchemaParameterfile.06040112
 # Modify SFIF file to point to Docker paths
 RUN sed -i 's|../../../static|/pge/static|' /pge/static/SNDR.SNPP.ATMS.L1A.sfif_201214135000.xml
 
+# Modify to point to utcpole.dat in the database location
+RUN sed -i -e 's|utcpole_20201220.dat|utcpole.dat|' -e 's|../../in/pcf|~/database/common/CSC|' /pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
+
 # Static files referenced in SFIF file
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.template.v02_02_08_201214135000.nc /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/ATMS-SDR-CC_npp_20131201000000Z_20140101000000Z_ee00000000000000Z_PS-1-O-CCR-14-1487-JPSS-DPA-008-SIDEA-PE_noaa_all_all-_all.xml /pge/static
