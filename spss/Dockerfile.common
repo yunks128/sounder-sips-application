@@ -1,15 +1,15 @@
 FROM unity-sds/sounder_sips_base:r0.1.0
 
 ENV BUILD_PATH /build
-ENV NUM_COMPILE_JOBS=4
+
+# Parallel build can cause the build to failr
+ENV NUM_COMPILE_JOBS=1
 
 WORKDIR $BUILD_PATH
 
 COPY src $BUILD_PATH/spss
 
-# Parallel build can cause this step to fail
-RUN cd $BUILD_PATH/spss/src/common/make && make -j 1
-
+RUN cd $BUILD_PATH/spss/src/common/make && make -j $NUM_COMPILE_JOBS
 RUN cd $BUILD_PATH/spss/src/shared_io/make && make -j $NUM_COMPILE_JOBS
 RUN cd $BUILD_PATH/spss/src/shared_alg/make && make -j $NUM_COMPILE_JOBS
 RUN cd $BUILD_PATH/spss/src/pge_wrapper/make && make -j $NUM_COMPILE_JOBS
