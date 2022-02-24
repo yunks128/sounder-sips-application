@@ -12,14 +12,17 @@ ENV PGS_PC_INFO_FILE=/pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
 ENV PGS_LEAPSEC_FILE=${PGEHOME}/database/common/TD/leapsec.dat
 
 # Install packages required for this PGE
-# Packages in second yum call come from EPEL
+# Packages in the second yum call come from EPEL
 RUN yum install -y libquadmath epel-release && \
     yum install -y python2-netcdf4 && \
+    yum install -y python3-pip python3-netcdf4 && \
+    pip3 install -U pip && \
+    pip3 install notebook papermill && \
     yum clean all && \
     rm -rf /var/cache/yum
 
 # Create directory structure for PGE files and necessary files
-RUN mkdir -p /pge/bin && mkdir -p /pge/static && mkdir -p /opt/packages
+RUN mkdir -p /pge/bin && mkdir -p /pge/static && mkdir -p /pge/interface && mkdir -p /opt/packages
 
 # Copy PGE binary from build
 COPY --from=builder /build/spss/src/sips_pge/l1a_atms/pge/bin/L1AMw_main /pge/bin
