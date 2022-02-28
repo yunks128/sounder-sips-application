@@ -1,2 +1,9 @@
 *.swp
 static
+
+# Created when running notebook container
+.cache
+.ipynb_checkpoints
+.ipython
+.jupyter
+.local

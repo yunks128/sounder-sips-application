@@ -17,7 +17,6 @@ done
 docker run --rm \
     -v ${PGE_IN_DIR}:/pge/in \
     -v ${PGE_OUT_DIR}:/pge/out \
-    -v ${PGE_STATIC_DIR}/dem:/peate/support/static/dem \
-    -v ${PGE_STATIC_DIR}/mcf:/ref/devstable/STORE/mcf \
+    -v ${PGE_STATIC_DIR}:/tmp/static \
     unity-sds/sounder_sips_l1a_pge:${DOCKER_TAG} \
-    /pge/bin/l1amw_run.py /pge/in/SNDR.SNPP.ATMS.L1A.nominal2.config_201214135000.xml /pge/out/SNDR.SNPP.ATMS.L1A.nominal2.log_201214135000.txt
+    $*

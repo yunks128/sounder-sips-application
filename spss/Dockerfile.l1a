@@ -11,6 +11,9 @@ ENV PGSHOME=/opt/packages/sdptk5.2.20v1.01/TOOLKIT/
 ENV PGS_PC_INFO_FILE=/pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
 ENV PGS_LEAPSEC_FILE=${PGEHOME}/database/common/TD/leapsec.dat
 
+# Ensure using UTF-8
+RUN localedef -c -f UTF-8 -i en_US en_US.UTF-8
+
 # Install packages required for this PGE
 # Packages in the second yum call come from EPEL
 RUN yum install -y libquadmath epel-release && \
@@ -22,10 +25,19 @@ RUN yum install -y libquadmath epel-release && \
     rm -rf /var/cache/yum
 
 # Create directory structure for PGE files and necessary files
-RUN mkdir -p /pge/bin && mkdir -p /pge/static && mkdir -p /pge/interface && mkdir -p /opt/packages
+# Change /data/static permissions so any user can make symlinks there
+RUN mkdir -p /pge/bin && \
+    mkdir -p /pge/static && \
+    mkdir -p /pge/interface && \
+    mkdir -p /opt/packages && \
+    mkdir -p /data/static && \
+    chmod 777 /data/static
 
 # Copy PGE binary from build
 COPY --from=builder /build/spss/src/sips_pge/l1a_atms/pge/bin/L1AMw_main /pge/bin
+
+# Copy PGE interface notebook
+COPY interface/run_l1a_pge.ipynb /pge/interface
 
 # Copy wrapper script from acceptance tests and modify paths
 COPY src/src/sips_pge/l1a_atms_snpp/acctest/scripts/l1amw_run.py /pge/bin
@@ -52,6 +64,9 @@ RUN sed -i 's|../../../static|/pge/static|' /pge/static/SNDR.SNPP.ATMS.L1A.sfif_
 # Modify to point to utcpole.dat in the database location
 RUN sed -i -e 's|utcpole_20201220.dat|utcpole.dat|' -e 's|../../in/pcf|~/database/common/CSC|' /pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
 
+# Modify to point DEMs to a path controlled by Docker
+RUN sed -i -e 's|/peate/support/static/dem|/data/static/dem|' -e 's|/ref/devstable/STORE/mcf|/data/static/mcf|' /pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
+
 # Static files referenced in SFIF file
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.template.v02_02_08_201214135000.nc /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/ATMS-SDR-CC_npp_20131201000000Z_20140101000000Z_ee00000000000000Z_PS-1-O-CCR-14-1487-JPSS-DPA-008-SIDEA-PE_noaa_all_all-_all.xml /pge/static
@@ -60,5 +75,11 @@ COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.APID_531_ENGHSKP_v11_2
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.apf_180412120000.xml /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1A.SPDCMetConstants_170905120000.pev /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1A.SPDCMetMappings_170905120000.xml /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/acctest/spdc_nominal2/in/SNDR.SNPP.ATMS.L1A.nominal2.config_201214135000.xml /pge/static/pge_config_template.xml
 
-CMD ["/pge/bin/l1amw_run.py"]
+# Necessary for click framework used by papermill:
+# https://click.palletsprojects.com/en/8.0.x/unicode-support/
+ENV LANG=C.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+ENTRYPOINT ["papermill", "/pge/interface/run_l1a_pge.ipynb"]
