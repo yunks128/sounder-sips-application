@@ -6,7 +6,7 @@ This repository represents the containerization of the Sounder SIPS `SPSS <https
 Requirements
 ------------
 
-In order to use this repository you will need access to the `Sounder SIPS Github Organization <https://github.jpl.nasa.gov/SIPS/>`_ on the JPL Enterprise server. This repository pulls in this repository as a Git submodule. Additionally you will need access to Docker and Docker Compose. See the **Static Files** section for information on obtaining the necessary static files.
+In order to use this repository you will need access to the `Sounder SIPS Github Organization <https://github.jpl.nasa.gov/SIPS/>`_ on the JPL Enterprise server. This repository pulls in this repository as a Git submodule. The Git LFS module must be installed in order for binary files to be correctly download. Additionally you will need access to Docker and Docker Compose. See the **Static Files** section for information on obtaining the necessary static files.
 
 Building
 --------
@@ -54,6 +54,11 @@ From the MIPL HPC Machine
 
 These files are also staged on the Section 398 MIPL HPC machine at ``miplhpc1:/export/proj1/home/mcduffie/unity/static_files``.
 
+From S3
+~~~~~~~
+
+These files are additionally stored with in the following Unity S3 bucket: ``s3://unity-ads/sounder_sips/static_files``.
+
 Staging
 ~~~~~~~
 
@@ -62,14 +67,21 @@ These two directories will need to be staged within the Docker image through vol
 Usage
 -----
 
-These two PGE Docker images require the following:
+The PGE Docker images requires several paths to be available to the container through volume mounts. The default paths are:
 
-* The static dem directory volume mounted as ``/peate/support/static/dem``
-* The static mcf diectory volume mounted as ``/ref/devstable/STORE/mcf``
+* ``/pge/in`` - Where input L0 input files are located
+* ``/pge/out`` - Where output files will be written
+* ``/data/static`` - Path where the static ``dem`` and ``mcf`` directories are located.
 
-Note that above we mount the static directories at the same location as they would exist on the standard SIPS production systems.
+These defaults can be overridden with the following parameters:
 
-The localized input staging directory should be mounted as ``/pge/in`` within the container and the localized output stage directory should be mounted as ``/pge/out``.
+* input_path
+* output_path
+* data_static_path
+
+`Papermill <https://papermill.readthedocs.io/>`_ is used as an interface to the `Jupyter <https://jupyter.org/>`_ notebook that wraps the L1A and L1B PGE executables. This notebook uses execution parameters to create a XML configuration file used to run the Sounder SIPS PGEs. Papermill parameters are passed to the container through the used of the ``-p`` Papermill argument. For instance to specify the ``input_path`` parameter a call to the Docker container with ``-p input_path /pge/in`` would set the input path to ``/pge/in``. Other methods for supplying parameters to Papermill can be seen at the `Papermill execution documentation page <https://papermill.readthedocs.io/en/latest/usage-execute.html>`_. A full list of available parameters can be seen by passing the ``--help-notebook`` argument to the Docker container.
+
+See the testing script mentioned in the next section for an example use of the container.
 
 Testing
 -------
