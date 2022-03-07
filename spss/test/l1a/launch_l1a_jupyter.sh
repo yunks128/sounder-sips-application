@@ -15,5 +15,6 @@ docker run --rm \
     -v ${PGE_STATIC_DIR}:/tmp/static \
     -v ${interface_dir}:/pge/interface \
     -p 127.0.0.1:$JUPYTER_PORT:$JUPYTER_PORT \
+    --entrypoint jupyter \
     unity-sds/sounder_sips_l1a_pge:${DOCKER_TAG} \
-    jupyter notebook --ip 0.0.0.0 --port $JUPYTER_PORT --notebook-dir=/pge/interface
+    notebook --ip 0.0.0.0 --port $JUPYTER_PORT --notebook-dir=/pge/interface
