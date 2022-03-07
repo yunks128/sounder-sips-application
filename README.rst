@@ -86,13 +86,24 @@ See the testing script mentioned in the next section for an example use of the c
 Testing
 -------
 
-A shell script exists to test execution of the L1A PGE. This script handles the volume mounting mentioned in the **Usage** section. The only additional step needed to run the test script is to point to the location of the static files. The static files can be pointed to through either a symbolic link or through an environment variable. If using a symbolic link then create a link called ``static`` from the repository root directory to point to the static files. Alternatively declare the `SIPS_STATIC_DIR` environment variable to point to the directory on the local system where you have stored the static files.
+A shell script exists to test execution of the L1A PGE. This script handles the volume mounting mentioned in the **Usage** section. The only additional step needed to run the test script is to point to the location of the static files. The static files can be pointed to through either a symbolic link or through an environment variable. If using a symbolic link then create a link called ``static`` from the repository root directory to point to the static files. Alternatively declare the ``PGE_STATIC_DIR`` environment variable to point to the directory on the local system where you have stored the static files.
 
-Once you have either set up a symbolic link to the static files or set the ``SIPS_STATIC_DIR`` environment variable this script can be run without any arguments::
+By default the script uses the ``in/`` and ``out/`` subdirectories under the location of test script to write files. Alternatively define the ``PGE_IN_DIR`` and ``PGE_OUT_DIR`` environment variables to point to different locations.
+
+Once you have set up the appropriate environment variables this script can be run without any arguments::
 
     $ spss/test/l1a/run_l1a_test.sh
 
-This will copy L0 files from the SPSS repository into into ``spss/test/l1a/in``. Results will be placed into ``spss/test/l1a/out``.
+The script will copy L0 files from the SPSS repository into into ``$PGE_IN_DIR``. Results will be placed into ``$PGE_OUT_DIR``.
+
+Development
+-----------
+
+In order to facilitate development the PGE images have a Jupyter runtime built into them. This can be accessed easily by using the following script::
+
+    $ spss/test/l1a/launch_l1a_jupyter.sh
+
+This exposes port 8888 onto the local machine. Follow the directions output on screen for information on how the access the Jupyter environment.
 
 Versioning
 ----------
