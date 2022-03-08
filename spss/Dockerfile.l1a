@@ -33,8 +33,11 @@ RUN mkdir -p /pge/bin && \
     mkdir -p /data/static && \
     chmod 777 /data/static
 
-# Copy PGE binary from build
+# Copy L1A PGE binary from build
 COPY --from=builder /build/spss/src/sips_pge/l1a_atms/pge/bin/L1AMw_main /pge/bin
+
+# Copy MetExtractor binary from build
+COPY --from=builder /build/spss/src/scf_metextractors/main/bin/MetExtractor /pge/bin
 
 # Copy PGE interface notebook
 COPY interface/run_l1a_pge.ipynb /pge/interface
@@ -74,6 +77,7 @@ COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.calibration_data_2
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.APID_531_ENGHSKP_v11_200204184500.xml /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.apf_180412120000.xml /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1A.SPDCMetConstants_170905120000.pev /pge/static
+COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.ATMS.L1A.SPDCMetStructure_161130151628.xml /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1A.SPDCMetMappings_170905120000.xml /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/acctest/spdc_nominal2/in/SNDR.SNPP.ATMS.L1A.nominal2.config_201214135000.xml /pge/static/pge_config_template.xml
 
