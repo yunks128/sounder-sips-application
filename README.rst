@@ -92,9 +92,13 @@ By default the script uses the ``in/`` and ``out/`` subdirectories under the loc
 
 Once you have set up the appropriate environment variables this script can be run without any arguments::
 
-    $ spss/test/l1a/run_l1a_test.sh
+    $ spss/test/l1a/run_l1a_test_local.sh
 
 The script will copy L0 files from the SPSS repository into into ``$PGE_IN_DIR``. Results will be placed into ``$PGE_OUT_DIR``.
+
+There is a second test script that will run the same test as above but will use a randomly assigned temporary directory for ``$PGE_IN_DIR`` and ``$PGE_OUT_DIR``. It uses non default paths within the container and sends their location to the Jupyter notebook as Papermill parameters. It is run without any arguments and setting ``$PGE_IN_DIR`` and ``$PGE_OUT_DIR`` will have no effect for this script::
+
+    $ spss/test/l1a/run_l1a_test_tempdir.sh
 
 Development
 -----------
