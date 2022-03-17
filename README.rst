@@ -86,35 +86,28 @@ See the testing script mentioned in the next section for an example use of the c
 Testing
 -------
 
-A shell script exists to test execution of the L1A PGE. This script handles the volume mounting mentioned in the **Usage** section. The only additional step needed to run the test script is to point to the location of the static files. The static files can be pointed to through either a symbolic link or through an environment variable. If using a symbolic link then create a link called ``static`` from the repository root directory to point to the static files. Alternatively declare the ``PGE_STATIC_DIR`` environment variable to point to the directory on the local system where you have stored the static files.
+Include in the repository are shell scripts to test execution of the L1A and L1B PGEs. These script handles the volume mounting mentioned in the **Usage** section. The only additional step needed to run the test script is to point to the location of the static files. The static files can be pointed to through either a symbolic link or through an environment variable. If using a symbolic link then create a link called ``static`` from the repository root directory to point to the static files. Alternatively declare the ``PGE_STATIC_DIR`` environment variable to point to the directory on the local system where you have stored the static files.
 
-By default the script uses the ``in/`` and ``out/`` subdirectories under the location of test script to write files. Alternatively define the ``PGE_IN_DIR`` and ``PGE_OUT_DIR`` environment variables to point to different locations.
+By default the scripts will create ``in/`` and ``out/`` subdirectories at a randomly assigned temporary directory. The directory locations will be printed to the screen. Alternatively define the ``PGE_IN_DIR`` and ``PGE_OUT_DIR`` environment variables to point to different locations. No temporary directory is created if both variables are defined.
 
-Once you have set up the appropriate environment variables this script can be run without any arguments::
+Once you have set up the appropriate environment variables these scripts can be run without any arguments for each PGE::
 
-    $ spss/test/l1a/run_l1a_test_local.sh
+    $ spss/test/run_l1a_test.sh
+    $ spss/test/run_l1b_test.sh
 
-The script will copy L0 files from the SPSS repository into into ``$PGE_IN_DIR``. Results will be placed into ``$PGE_OUT_DIR``.
-
-There is a second test script that will run the same test as above but will use a randomly assigned temporary directory for ``$PGE_IN_DIR`` and ``$PGE_OUT_DIR``. It uses non default paths within the container and sends their location to the Jupyter notebook as Papermill parameters. It is run without any arguments and setting ``$PGE_IN_DIR`` and ``$PGE_OUT_DIR`` will have no effect for this script::
-
-    $ spss/test/l1a/run_l1a_test_tempdir.sh
+The scripts will copy the necessary input files from the SPSS repository into into ``$PGE_IN_DIR``. Results will be placed into ``$PGE_OUT_DIR``. The L1A and L1B scripts are independent, meaning that you do not need to run the L1A script first before running the L1B script.
 
 Development
 -----------
 
-In order to facilitate development the PGE images have a Jupyter runtime built into them. This can be accessed easily by using the following script::
+In order to facilitate development the PGE images have a Jupyter runtime built into them. This can be accessed easily by using one of the following scripts::
 
-    $ spss/test/l1a/launch_l1a_jupyter.sh
+    $ spss/test/launch_l1a_jupyter.sh
+    $ spss/test/launch_l1b_jupyter.sh
 
-This exposes port 8888 onto the local machine. Follow the directions output on screen for information on how the access the Jupyter environment.
+Each will exposes port 8888 onto the local machine. Follow the directions output on screen for information on how the access the Jupyter environment. Once again both are independent of each other. The necessary input files will be staged to temporary locations should the ``PGE_IN_DIR`` and ``PGE_OUT_DIR`` environment variables not be defined prior to running the scripts.
 
 Versioning
 ----------
 
 The Docker group and Docker tag applied to the images during the docker-compose build process come from the ``.env`` file in the repository base directory. The ``DOCKER_TAG`` value should be updated for new deliveries of the algorithm.
-
-TODO
-----
-
-The entry point to the PGEs has not yet been finalized. Therefore what is done by the test scripts currently is just a first step towards an actual application package.
