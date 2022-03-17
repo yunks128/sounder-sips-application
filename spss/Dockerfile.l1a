@@ -42,13 +42,6 @@ COPY --from=builder /build/spss/src/scf_metextractors/main/bin/MetExtractor /pge
 # Copy PGE interface notebook
 COPY interface/run_l1a_pge.ipynb /pge/interface
 
-# Copy wrapper script from acceptance tests and modify paths
-COPY src/src/sips_pge/l1a_atms_snpp/acctest/scripts/l1amw_run.py /pge/bin
-
-RUN chmod 755 /pge/bin/l1amw_run.py
-RUN sed -i 's|../expected|/pge/expected|' /pge/bin/l1amw_run.py
-RUN sed -i 's|../../../../l1a_atms/pge/bin|/pge/bin|' /pge/bin/l1amw_run.py
-
 # Copy over SDP Toolkit for its database files
 COPY --from=builder /opt/packages/sdptk5.2.20v1.01 /opt/packages/sdptk5.2.20v1.01
 
@@ -79,6 +72,8 @@ COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.apf_180412120000.x
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1A.SPDCMetConstants_170905120000.pev /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.ATMS.L1A.SPDCMetStructure_161130151628.xml /pge/static
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1A.SPDCMetMappings_170905120000.xml /pge/static
+
+# Template PGE configuration file modified by Jupyter notebook
 COPY src/src/sips_pge/l1a_atms_snpp/acctest/spdc_nominal2/in/SNDR.SNPP.ATMS.L1A.nominal2.config_201214135000.xml /pge/static/pge_config_template.xml
 
 # Necessary for click framework used by papermill:

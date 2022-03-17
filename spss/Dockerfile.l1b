@@ -7,11 +7,72 @@ RUN cd $BUILD_PATH/spss/src/sips_pge/l1b_atms/make && make -j $NUM_COMPILE_JOBS
 
 FROM centos:7
 
-RUN mkdir -p /pge/bin
-COPY --from=builder /build/spss/src/sips_pge/l1b_atms/main/bin/L1BMw_main /pge/bin
+ENV PGSHOME=/opt/packages/sdptk5.2.20v1.01/TOOLKIT/
+ENV PGS_PC_INFO_FILE=/pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
+ENV PGS_LEAPSEC_FILE=${PGEHOME}/database/common/TD/leapsec.dat
 
-RUN yum install -y libquadmath && \
+# Ensure using UTF-8
+RUN localedef -c -f UTF-8 -i en_US en_US.UTF-8
+
+# Install packages required for this PGE
+# Packages in the second yum call come from EPEL
+RUN yum install -y libquadmath epel-release && \
+    yum install -y python2-netcdf4 && \
+    yum install -y python3-pip python3-netcdf4 && \
+    pip3 install -U pip && \
+    pip3 install notebook papermill && \
     yum clean all && \
     rm -rf /var/cache/yum
 
-CMD ["/pge/bin/L1BMw_main"]
+# Create directory structure for PGE files and necessary files
+# Change /data/static permissions so any user can make symlinks there
+RUN mkdir -p /pge/bin && \
+    mkdir -p /pge/static && \
+    mkdir -p /pge/interface && \
+    mkdir -p /opt/packages && \
+    mkdir -p /data/static && \
+    chmod 777 /data/static
+
+# Copy L1B PGE binary
+COPY --from=builder /build/spss/src/sips_pge/l1b_atms/main/bin/L1BMw_main /pge/bin
+
+# Copy MetExtractor binary from build
+COPY --from=builder /build/spss/src/scf_metextractors/main/bin/MetExtractor /pge/bin
+
+# Copy PGE interface notebook
+COPY interface/run_l1b_pge.ipynb /pge/interface
+
+# Copy over SDP Toolkit for its database files
+COPY --from=builder /opt/packages/sdptk5.2.20v1.01 /opt/packages/sdptk5.2.20v1.01
+
+# Update leap seconds file. This file needs to be periodically updated
+COPY ephemeris/leapsec.dat /opt/packages/sdptk5.2.20v1.01/TOOLKIT/database/common/TD/leapsec.dat
+COPY ephemeris/utcpole.dat /opt/packages/sdptk5.2.20v1.01/TOOLKIT/database/common/CSC/utcpole.dat
+
+# Copy files from acceptance test directories, these are referenced by the input XML file
+COPY src/pcf/SNDR.PGSToolkit_ProcessControlFile.pcf /pge/static
+COPY src/src/sips_pge/l1b_atms_snpp/acctest/in/SNDR.SNPP.L1bMw.sfif.acctest.xml /pge/static
+COPY src/src/sips_pge/l1b_atms_snpp/acctest/in/SNDR.SchemaParameterfile.060401120000.xsd /pge/static
+
+# Modify SFIF file to point to Docker paths
+RUN sed -i 's|../../../static|/pge/static|' /pge/static/SNDR.SNPP.L1bMw.sfif.acctest.xml
+
+# Modify to point DEMs to a path controlled by Docker
+RUN sed -i -e 's|/peate/support/static/dem|/data/static/dem|' -e 's|/ref/devstable/STORE/mcf|/data/static/mcf|' /pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
+
+# Static files referenced in SFIF file
+COPY src/src/sips_pge/l1b_atms_snpp/static/SNDR.SNPP.L1bMw.template.201217000000.nc /pge/static
+COPY src/src/sips_pge/l1b_atms_snpp/static/SNDR.SNPP.L1bMw.apf.171115000000.xml /pge/static
+COPY src/src/sips_pge/l1b_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1B.SPDCMetConstants_170801000000.pev /pge/static
+COPY src/src/sips_pge/l1b_atms_snpp/static/SNDR.SIPS.SNPP.ATMS.L1B.SPDCMetMappings_171115000000.xml /pge/static
+COPY src/src/sips_pge/l1b_atms_snpp/static/SNDR.SIPS.ATMS.L1B.SPDCMetStructure_171115000000.xml /pge/static
+
+# Template PGE configuration file modified by Jupyter notebook
+COPY src/src/sips_pge/l1b_atms_snpp/acctest/spdc_nominal/in/SNDR.SNPP.L1bMw.nominal.config.xml /pge/static/pge_config_template.xml
+
+# Necessary for click framework used by papermill:
+# https://click.palletsprojects.com/en/8.0.x/unicode-support/
+ENV LANG=C.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+ENTRYPOINT ["papermill", "/pge/interface/run_l1b_pge.ipynb"]
