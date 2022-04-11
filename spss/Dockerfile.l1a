@@ -25,13 +25,10 @@ RUN yum install -y libquadmath epel-release && \
     rm -rf /var/cache/yum
 
 # Create directory structure for PGE files and necessary files
-# Change /data/static permissions so any user can make symlinks there
 RUN mkdir -p /pge/bin && \
     mkdir -p /pge/static && \
     mkdir -p /pge/interface && \
-    mkdir -p /opt/packages && \
-    mkdir -p /data/static && \
-    chmod 777 /data/static
+    mkdir -p /opt/packages
 
 # Copy L1A PGE binary from build
 COPY --from=builder /build/spss/src/sips_pge/l1a_atms/pge/bin/L1AMw_main /pge/bin
@@ -61,7 +58,7 @@ RUN sed -i 's|../../../static|/pge/static|' /pge/static/SNDR.SNPP.ATMS.L1A.sfif_
 RUN sed -i -e 's|utcpole_20201220.dat|utcpole.dat|' -e 's|../../in/pcf|~/database/common/CSC|' /pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
 
 # Modify to point DEMs to a path controlled by Docker
-RUN sed -i -e 's|/peate/support/static/dem|/data/static/dem|' -e 's|/ref/devstable/STORE/mcf|/data/static/mcf|' /pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
+RUN sed -i -e 's|/peate/support/static/dem|/tmp/static/dem|' -e 's|/ref/devstable/STORE/mcf|/tmp/static/mcf|' /pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
 
 # Static files referenced in SFIF file
 COPY src/src/sips_pge/l1a_atms_snpp/static/SNDR.SNPP.ATMS.L1A.template.v02_02_08_201214135000.nc /pge/static
