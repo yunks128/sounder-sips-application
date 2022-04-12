@@ -28,7 +28,7 @@ RUN yum install -y libquadmath epel-release && \
 RUN mkdir -p /pge/bin && \
     mkdir -p /pge/static && \
     mkdir -p /pge/interface && \
-    mkdir -p /opt/packages && \
+    mkdir -p /opt/packages
 
 # Copy L1B PGE binary
 COPY --from=builder /build/spss/src/sips_pge/l1b_atms/main/bin/L1BMw_main /pge/bin
