@@ -64,8 +64,8 @@ Staging
 
 These two directories will need to be staged within the Docker image through volume mounts as described in subsequent sections. 
 
-Usage
------
+Direct Usage
+------------
 
 The PGE Docker images requires several paths to be available to the container through volume mounts. The default paths are:
 
@@ -83,10 +83,22 @@ These defaults can be overridden with the following parameters:
 
 See the testing script mentioned in the next section for an example use of the container.
 
+CWL Usage
+---------
+
+The ``spss/cwl`` directory contains an `OGC Application Package <https://docs.ogc.org/bp/20-089r1.html>`_ `CWL <https://www.commonwl.org/>`_ file for each PGE. The CWL files handle the volume mounting to the Dockage image as mentioned in the **Usage** section. The files also contain additional metadata to make the application more self descriptive.
+
+The CWL files can be executed directly from the ``spss/cwl`` directory using `cwltool <https://github.com/common-workflow-language/cwltool>`_ using the YAML parameter files in the same directory ::
+
+    $ cd spss/cwl
+    $ cwltool --outdir /tmp/ l1a_package.cwl l1a_package.yml
+
+Without the ``--outdir`` argument above the output would be written into the ``spss/cwl`` directory. The YAML parameter files expect there to be a symbolic link at the root level of the repository to the location of the static DEM files as mentioned in the **Testing** section below. It is recommended to use the test scripts mentioned in the next step because they handle creating a temporary directory for output files and allow more flexibility for how the static directory is located.
+
 Testing
 -------
 
-Include in the repository are shell scripts to test execution of the L1A and L1B PGEs. These script handles the volume mounting mentioned in the **Usage** section. The only additional step needed to run the test script is to point to the location of the static files. The static files can be pointed to through either a symbolic link or through an environment variable. If using a symbolic link then create a link called ``static`` from the repository root directory to point to the static files. Alternatively declare the ``PGE_STATIC_DIR`` environment variable to point to the directory on the local system where you have stored the static files.
+Included in the repository are shell scripts to test execution of the L1A and L1B PGEs.  These scripts are convenient wrappers to calling the CWL files.. The only additional step needed to run the test script is to point to the location of the static files. The static files can be pointed to through either a symbolic link or through an environment variable. If using a symbolic link then create a link called ``static`` from the repository root directory to point to the static files. Alternatively declare the ``PGE_STATIC_DIR`` environment variable to point to the directory on the local system where you have stored the static files.
 
 By default the scripts will create ``in/`` and ``out/`` subdirectories at a randomly assigned temporary directory. The directory locations will be printed to the screen. Alternatively define the ``PGE_IN_DIR`` and ``PGE_OUT_DIR`` environment variables to point to different locations. No temporary directory is created if both variables are defined.
 
