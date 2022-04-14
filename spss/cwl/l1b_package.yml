@@ -1,0 +1,3 @@
+input_dir:
+  class: Directory
+  path: ../src/src/sips_pge/l1b_atms_snpp/acctest/in/l1a
