@@ -1,8 +1,0 @@
-# Ignore certain files when copying that are large and unneeded for the build context
-src/**/acctest/**/in/**/*.cdl
-src/**/acctest/**/in/**/*.nc
-src/**/acctest/**/in/**/*.orig
-src/**/acctest/**/in/**/*.PDS
-src/**/acctest/**/expected
-src/**/unittest
-src/**/unittests

@@ -1,27 +1,15 @@
 # ${DOCKER_GROUP} and ${DOCKER_TAG} default values defined in the .env file 
 version: '3'
 services:
-    sips_base:
-        image: ${DOCKER_GROUP}/sounder_sips_base:${DOCKER_TAG}
-        hostname: local
-        build:
-            context: base/ 
-            dockerfile: $PWD/base/Dockerfile
-    spss_pge_common:
-        image: ${DOCKER_GROUP}/sounder_sips_pge_common:${DOCKER_TAG}
-        hostname: local
-        build:
-            context: spss/
-            dockerfile: $PWD/spss/Dockerfile.common
-    spss_l1a_pge:
+    l1a_pge:
         image: ${DOCKER_GROUP}/sounder_sips_l1a_pge:${DOCKER_TAG}
         hostname: local
         build:
             context: spss/
-            dockerfile: $PWD/spss/Dockerfile.l1a
-    spss_l1b_pge:
+            dockerfile: $PWD/Dockerfile.l1a
+    l1b_pge:
         image: ${DOCKER_GROUP}/sounder_sips_l1b_pge:${DOCKER_TAG}
         hostname: local
         build:
             context: spss/
-            dockerfile: $PWD/spss/Dockerfile.l1b
+            dockerfile: $PWD/Dockerfile.l1b
