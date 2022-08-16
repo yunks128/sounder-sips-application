@@ -1,5 +1,13 @@
 #!/bin/bash
 
+DEFAULT_STATIC_FILES_DIR="/unity/ads/sounder_sips/static_files/"
+
+usage () {
+    echo "Usage:"
+    echo "$0 <source_code_directory> <static_config_directory> [<static_data_directory>]"
+    exit 1
+}
+
 script_dir=$(dirname $0)
 
 src_dir=$1
