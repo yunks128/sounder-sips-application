@@ -42,10 +42,9 @@ cp $src_dir/src/sips_pge/l1a_atms_snpp/acctest/in/SNDR.SchemaParameterfile.06040
 # Modify SFIF file to point to destination paths
 sed -i 's|../../../static|'$dst_dir'|' $dst_dir/SNDR.SNPP.ATMS.L1A.sfif_201214135000.xml
 
-# Modify to point leapsec.dat and utcpole.dat to our configuration static dir
+# Modify to point utcpole.dat to the Toolkit directory
 sed -i -e 's|utcpole_20201220.dat|utcpole.dat|' \
-       -e 's|../../in/pcf|'$dst_dir'|' \
-       -e 's|~/database/common/TD|'$dst_dir'|' \
+       -e 's|../../in/pcf|~/database/common/CSC|' \
        $dst_dir/SNDR.PGSToolkit_ProcessControlFile.pcf
 
 # Modify to point DEMs to a path controlled by Docker
