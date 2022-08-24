@@ -26,4 +26,5 @@ sed -i \
     -e 's/libpng15.a/libpng16.a/' \
     $modified_file
     
-diff -u $bak_file $modified_file
+# The || true here prevents exiting with a non-zero exit code
+diff -u $bak_file $modified_file || true

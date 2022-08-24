@@ -5,11 +5,13 @@ services:
         image: ${DOCKER_GROUP}/sounder_sips_l1a_pge:${DOCKER_TAG}
         hostname: local
         build:
-            context: spss/
+            context: ./
             dockerfile: $PWD/Dockerfile.l1a
+            args:
+                CODE_SOURCE_FILE: $CODE_SOURCE_FILE
     l1b_pge:
         image: ${DOCKER_GROUP}/sounder_sips_l1b_pge:${DOCKER_TAG}
         hostname: local
         build:
-            context: spss/
+            context: ./
             dockerfile: $PWD/Dockerfile.l1b

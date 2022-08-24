@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DEFAULT_STATIC_FILES_DIR="/unity/ads/sounder_sips/static_files/"
 
 usage () {
@@ -29,10 +31,6 @@ fi
 if [ -z "$static_dir" ]; then
     static_dir=$DEFAULT_STATIC_FILES_DIR
 fi
-
-# Copy SDPTK toolkit files
-cp $script_dir/../ephemeris/leapsec.dat $dst_dir
-cp $script_dir/../ephemeris/utcpole.dat $dst_dir
 
 # Copy files from acceptance test directories, these are referenced by the input XML file
 cp $src_dir/src/sips_pge/l1a_atms_snpp/acctest/in/pcf/SNDR.PGSToolkit_ProcessControlFile.pcf $dst_dir
