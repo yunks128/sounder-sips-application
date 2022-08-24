@@ -46,11 +46,11 @@ if [ -z "$use_temp" ]; then
 fi
 
 # Include variables from .env file so we have $DOCKER_TAG available
-env_file=$(realpath $base_dir/../../.env)
+env_file=$(realpath $base_dir/../.env)
 . $env_file
 
 # Find static files location
-lcl_static_dir=$(realpath $base_dir/../../static)
+lcl_static_dir=$(realpath $base_dir/../static)
 if [ -z "$PGE_STATIC_DIR" ] && [ -e "$lcl_static_dir" ]; then
     PGE_STATIC_DIR=$lcl_static_dir
 else

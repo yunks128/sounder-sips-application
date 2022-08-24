@@ -13,6 +13,7 @@ src_dir=$1
 
 if [ -z "$src_dir" ]; then
     usage
+    exit 1
 fi
 
 # PGE common directories

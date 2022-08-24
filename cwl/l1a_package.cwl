@@ -66,7 +66,7 @@ $graph:
 
   requirements:
     DockerRequirement:
-      dockerPull: unity-sds/sounder_sips_l1a_pge:r0.1.0
+      dockerPull: unity-ads/sounder_sips_l1a_pge:r0.1.0
   
   arguments: [
     "$(runtime.outdir)/processed_notebook.ipynb",
