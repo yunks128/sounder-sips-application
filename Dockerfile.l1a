@@ -45,7 +45,7 @@ ENV PGE_STATIC_DATA_PATH=/tmp/static
 ENV PGE_STATIC_CONFIG_PATH=$BUILDER_STATIC_CONFIG_PATH
 
 ENV PGSHOME=/opt/packages/sdptk5.2.20v1.01/TOOLKIT/
-ENV PGS_PC_INFO_FILE=/pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
+ENV PGS_PC_INFO_FILE=${PGE_STATIC_CONFIG_PATH}/SNDR.PGSToolkit_ProcessControlFile.pcf
 ENV PGS_LEAPSEC_FILE=${PGSHOME}/database/common/TD/leapsec.dat
 
 # Switch to root for installs
