@@ -4,7 +4,7 @@ FROM unity-ads/sounder_sips_dev:r0.1.0 AS builder
 ARG BUILDER_BASE_PATH=/build
 ARG BUILDER_SCRIPTS_PATH=$BUILDER_BASE_PATH/scripts
 ARG BUILDER_CODE_PATH=$BUILDER_BASE_PATH/src
-ARG BUILDER_CONFIG_PATH=$BUILDER_BASE_PATH/config
+ARG BUILDER_STATIC_CONFIG_PATH=/pge/config
 
 # Local file that is copied into the image then untarred
 ARG CODE_SOURCE_FILE
@@ -26,7 +26,7 @@ RUN tar zfx $CODE_DEST_FILE --strip-components=1 -C $BUILDER_CODE_PATH && \
     $BUILDER_SCRIPTS_PATH/patch_source.sh $BUILDER_CODE_PATH && \
     $BUILDER_SCRIPTS_PATH/build_common.sh $BUILDER_CODE_PATH && \
     $BUILDER_SCRIPTS_PATH/build_l1a.sh $BUILDER_CODE_PATH && \
-    $BUILDER_SCRIPTS_PATH/create_l1a_static_config.sh $BUILDER_CODE_PATH $BUILDER_CONFIG_PATH
+    $BUILDER_SCRIPTS_PATH/create_l1a_static_config.sh $BUILDER_CODE_PATH $BUILDER_STATIC_CONFIG_PATH
 
 # ---
 
@@ -36,17 +36,17 @@ FROM jupyter/base-notebook
 # need to mirror their values in the first stage
 ARG BUILDER_BASE_PATH=/build
 ARG BUILDER_CODE_PATH=$BUILDER_BASE_PATH/src
-ARG BUILDER_CONFIG_PATH=$BUILDER_BASE_PATH/config
+ARG BUILDER_STATIC_CONFIG_PATH=/pge/config
 
 # There are used by the notebook to override defaults
 ENV PGE_BINARY_PATH=/pge/bin
 ENV PGE_INTERFACE_PATH=/pge/interface
 ENV PGE_STATIC_DATA_PATH=/tmp/static
-ENV PGE_STATIC_CONFIG_PATH=/pge/config
+ENV PGE_STATIC_CONFIG_PATH=$BUILDER_STATIC_CONFIG_PATH
 
 ENV PGSHOME=/opt/packages/sdptk5.2.20v1.01/TOOLKIT/
 ENV PGS_PC_INFO_FILE=/pge/static/SNDR.PGSToolkit_ProcessControlFile.pcf
-ENV PGS_LEAPSEC_FILE=${PGEHOME}/database/common/TD/leapsec.dat
+ENV PGS_LEAPSEC_FILE=${PGSHOME}/database/common/TD/leapsec.dat
 
 # Switch to root for installs
 USER root
@@ -55,7 +55,7 @@ USER root
 RUN localedef -c -f UTF-8 -i en_US en_US.UTF-8
 
 # Install packages required for this PGE
-# Packages in the second yum call come from EPEL
+# These mirror much of what is in sounder_sips_dev but only contains what is necessary for runtime
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
@@ -69,7 +69,11 @@ RUN apt-get update --yes && \
       # Needed by SDPTK library
       csh \
       # Needed by g2clib and SPSS software, contains the static library as well
-      libpng-dev && \
+      libpng-dev \
+      # Set up papermill
+      python3-pip && \
+      pip3 install -U pip && \
+      pip3 install papermill && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create directory structure for PGE files and necessary files
@@ -91,7 +95,7 @@ COPY interface/run_l1a_pge.ipynb $PGE_INTERFACE_PATH
 COPY --from=builder /opt/packages/sdptk5.2.20v1.01 /opt/packages/sdptk5.2.20v1.01
 
 # Copy over static config files
-COPY --from=builder $BUILDER_CONFIG_PATH $PGE_CONFIG_PATH
+COPY --from=builder $BUILDER_STATIC_CONFIG_PATH $PGE_STATIC_CONFIG_PATH
 
 # Necessary for click framework used by papermill:
 # https://click.palletsprojects.com/en/8.0.x/unicode-support/
@@ -101,4 +105,7 @@ ENV LC_ALL=en_US.UTF-8
 # Switch back to jovyan to avoid accidental container runs as root
 USER ${NB_UID}
 
-ENTRYPOINT ["papermill", "$PGE_INTERFACE_PATH/run_l1a_pge.ipynb"]
+# Make sure that $PGE_INTERFACE_PATH and this path match.
+# We cannot evaluate variables inside the exec form of ENTRYPOINT,
+# So the path must be duplicated here in order to work.
+ENTRYPOINT ["papermill", "/pge/interface/run_l1a_pge.ipynb"]
