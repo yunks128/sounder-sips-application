@@ -4,6 +4,7 @@ FROM unity-ads/sounder_sips_dev:r0.1.0 AS builder
 ARG BUILDER_BASE_PATH=/build
 ARG BUILDER_SCRIPTS_PATH=$BUILDER_BASE_PATH/scripts
 ARG BUILDER_CODE_PATH=$BUILDER_BASE_PATH/src
+ARG BUILDER_STATIC_DATA_PATH=/tmp/static
 ARG BUILDER_STATIC_CONFIG_PATH=/pge/config
 
 # Local file that is copied into the image then untarred
@@ -26,7 +27,7 @@ RUN tar zfx $CODE_DEST_FILE --strip-components=1 -C $BUILDER_CODE_PATH && \
     $BUILDER_SCRIPTS_PATH/patch_source.sh $BUILDER_CODE_PATH && \
     $BUILDER_SCRIPTS_PATH/build_common.sh $BUILDER_CODE_PATH && \
     $BUILDER_SCRIPTS_PATH/build_l1a.sh $BUILDER_CODE_PATH && \
-    $BUILDER_SCRIPTS_PATH/create_l1a_static_config.sh $BUILDER_CODE_PATH $BUILDER_STATIC_CONFIG_PATH
+    $BUILDER_SCRIPTS_PATH/create_l1a_static_config.sh $BUILDER_CODE_PATH $BUILDER_STATIC_CONFIG_PATH $BUILDER_STATIC_DATA_PATH
 
 # ---
 
@@ -36,12 +37,13 @@ FROM jupyter/base-notebook
 # need to mirror their values in the first stage
 ARG BUILDER_BASE_PATH=/build
 ARG BUILDER_CODE_PATH=$BUILDER_BASE_PATH/src
+ARG BUILDER_STATIC_DATA_PATH=/tmp/static
 ARG BUILDER_STATIC_CONFIG_PATH=/pge/config
 
 # There are used by the notebook to override defaults
 ENV PGE_BINARY_PATH=/pge/bin
 ENV PGE_INTERFACE_PATH=/pge/interface
-ENV PGE_STATIC_DATA_PATH=/tmp/static
+ENV PGE_STATIC_DATA_PATH=$BUILDER_STATIC_DATA_PATH
 ENV PGE_STATIC_CONFIG_PATH=$BUILDER_STATIC_CONFIG_PATH
 
 ENV PGSHOME=/opt/packages/sdptk5.2.20v1.01/TOOLKIT/
