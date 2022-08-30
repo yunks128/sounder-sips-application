@@ -29,7 +29,8 @@ fi
 cwltool \
     --outdir ${PGE_OUT_DIR} \
     ${cwl_path}/l1a_package.cwl \
-    --input_dir ${PGE_IN_DIR} \
+    --input_ephatt_dir ${PGE_IN_DIR}/ephatt \
+    --input_science_dir ${PGE_IN_DIR}/atms_science \
     --static_dir ${PGE_STATIC_DIR} \
     --start_datetime $(grep start_datetime ${cwl_path}/l1a_package.yml | awk '{print $2}' | sed 's/\"//g') \
     --end_datetime $(grep end_datetime ${cwl_path}/l1a_package.yml | awk '{print $2}' | sed 's/\"//g') \
