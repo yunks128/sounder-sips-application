@@ -16,7 +16,7 @@ fi
 # Source common variables
 source $(dirname $0)/setup_env.sh $(dirname $0)
 
-# Copy input L0 files from SPSS source tree
+# Copy input L0 files from source directory
 cp -av $l0_in_dir/* $PGE_IN_DIR
 
 cwl_path=$(realpath "$(dirname $0)"/../cwl)

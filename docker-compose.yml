@@ -15,3 +15,5 @@ services:
         build:
             context: ./
             dockerfile: $PWD/Dockerfile.l1b
+            args:
+                CODE_SOURCE_FILE: $CODE_SOURCE_FILE
